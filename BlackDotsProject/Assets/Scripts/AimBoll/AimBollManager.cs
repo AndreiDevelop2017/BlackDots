@@ -10,14 +10,14 @@ public class AimBollManager : MonoBehaviour
 	// Use this for initialization
 	void OnEnable()
 	{
-		PlayerBollManager.OnGoodMove += StartRotate;
-		PlayerBollManager.OnBadMove += StopRotate;
+		PlayerSpear.OnGoodMove += StartRotate;
+		PlayerBoll.OnBadMove += StopRotate;
 	}
 
 	void OnDisable()
 	{
-		PlayerBollManager.OnGoodMove -= StartRotate;
-		PlayerBollManager.OnBadMove -= StopRotate;
+		PlayerSpear.OnGoodMove -= StartRotate;
+		PlayerBoll.OnBadMove -= StopRotate;
 	}
 
 	void Awake () 
@@ -30,7 +30,7 @@ public class AimBollManager : MonoBehaviour
 	{
 		if (!_IsRotating) 
 		{
-			_currentTransform.DORotate (new Vector3 (0f, 0f, 360f), 5f, RotateMode.FastBeyond360).SetEase (Ease.Linear).SetLoops (-1);
+			_currentTransform.DORotate (new Vector3 (0f, 0f, 360f), 3f, RotateMode.FastBeyond360).SetEase (Ease.Linear).SetLoops (-1);
 			_IsRotating = true;
 		}
 	}

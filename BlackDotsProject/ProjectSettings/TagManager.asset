@@ -6,6 +6,7 @@ TagManager:
   tags:
   - AimBoll
   - PlayerBoll
+  - PlayerSpear
   layers:
   - Default
   - TransparentFX
