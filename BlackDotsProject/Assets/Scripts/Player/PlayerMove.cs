@@ -6,18 +6,6 @@ using DG.Tweening;
 public class PlayerMove : MonoBehaviour, IMove 
 {
 	private Transform _currentTransform;
-	// Use this for initialization
-	void OnEnable()
-	{
-		PlayerSpear.OnGoodMove += StopMove;
-		PlayerBoll.OnBadMove += StopMove;
-	}
-
-	void OnDisable()
-	{
-		PlayerSpear.OnGoodMove -= StopMove;
-		PlayerBoll.OnBadMove -= StopMove;
-	}
 
 	void Awake () 
 	{

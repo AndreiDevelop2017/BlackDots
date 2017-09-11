@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameFieldManager : MonoBehaviour 
+public class GameManager : MonoBehaviour 
 {
 	private const int PLAYER_BOLL_COUNT = 20;
+
+	public delegate void LoseGameHandler ();
+	public static LoseGameHandler OnLoseGame;
 
 	public GameObject playerBollPrefab;
 
@@ -31,7 +33,7 @@ public class GameFieldManager : MonoBehaviour
 		PoolManager.Instance.CreatePool (playerBollPrefab, PLAYER_BOLL_COUNT);
 
 		//PoolManager.Instance.GetFromPool (playerBollPrefab, _firstPlayerBollPosition, Quaternion.identity);
-		PoolManager.Instance.GetFromPool (playerBollPrefab, _secondPlayerBollPosition, Quaternion.identity);
+		PoolManager.Instance.ReuseFromPool (playerBollPrefab, _secondPlayerBollPosition, Quaternion.identity);
 		//PoolManager.Instance.GetFromPool (playerBollPrefab, _thirdPlayerBollPosition, Quaternion.identity);
 
 		//_playerBollManagers = GameObject.FindObjectsOfType<PlayerBollManager> ();
@@ -39,19 +41,18 @@ public class GameFieldManager : MonoBehaviour
 	
 	void SetNewPlayerBoll()
 	{
-		PoolManager.Instance.GetFromPool (playerBollPrefab, _secondPlayerBollPosition, Quaternion.identity);
+		PoolManager.Instance.ReuseFromPool (playerBollPrefab, _secondPlayerBollPosition, Quaternion.identity);
 	}
 
 	//TODO: прописать нормальное переключение уровней с анимацией
 
 	void ReloadLevel()
 	{
-		StartCoroutine (LoadSceneDelay ());
-	}
+		PoolManager.Instance.DeactivateAllPoolObjects (playerBollPrefab);
 
-	IEnumerator LoadSceneDelay()
-	{
-		yield return new WaitForSeconds (0.05f);
-		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+		if (OnLoseGame != null)
+			OnLoseGame ();
+
+		PoolManager.Instance.ReuseFromPool (playerBollPrefab, _secondPlayerBollPosition, Quaternion.identity);
 	}
 }

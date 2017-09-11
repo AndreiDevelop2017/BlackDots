@@ -11,13 +11,13 @@ public class AimBollManager : MonoBehaviour
 	void OnEnable()
 	{
 		PlayerSpear.OnGoodMove += StartRotate;
-		PlayerBoll.OnBadMove += StopRotate;
+		GameManager.OnLoseGame += StopRotate;
 	}
 
 	void OnDisable()
 	{
 		PlayerSpear.OnGoodMove -= StartRotate;
-		PlayerBoll.OnBadMove -= StopRotate;
+		GameManager.OnLoseGame -= StopRotate;
 	}
 
 	void Awake () 
@@ -38,6 +38,7 @@ public class AimBollManager : MonoBehaviour
 	void StopRotate()
 	{
 		_currentTransform.DOKill();
+		_currentTransform.rotation = Quaternion.identity;
 		_IsRotating = false;
 	}
 }

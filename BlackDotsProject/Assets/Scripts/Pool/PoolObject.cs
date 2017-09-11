@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class PoolObject : MonoBehaviour {
 
 	private Transform _currentTransform;
@@ -11,7 +12,6 @@ public class PoolObject : MonoBehaviour {
 	{
 		_currentGameObject = gameObject;
 		_currentTransform = _currentGameObject.transform;
-		Deactivate ();
 	}
 
 	public void Activate(Vector3 position, Quaternion rotation)
@@ -21,10 +21,11 @@ public class PoolObject : MonoBehaviour {
 		_currentTransform.rotation = rotation;
 	}
 
-	public void Deactivate()
+	public void Deactivate(Transform parent)
 	{
-		_currentGameObject.SetActive (false);
+		_currentTransform.SetParent (parent);
 		_currentTransform.position = Vector3.zero;
 		_currentTransform.rotation = Quaternion.identity;
+		_currentGameObject.SetActive (false);
 	}
 }

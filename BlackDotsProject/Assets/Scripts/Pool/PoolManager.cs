@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class PoolManager : MonoBehaviour 
 {
-	private Dictionary<int,Queue<PoolObject>> _poolDictionary = new Dictionary<int,Queue<PoolObject>>();
+	private Dictionary<int,Queue<PoolObject>> _poolDictionary;
+
+	private Transform _currentTransform;
 
 	private static PoolManager _instance;
 	public static PoolManager Instance
 	{
 		get 
 		{
-			if (_instance == null)
+			if (_instance == null) 
 				_instance = GameObject.FindObjectOfType<PoolManager> ();
 			return _instance;
 		}
@@ -20,6 +22,13 @@ public class PoolManager : MonoBehaviour
 		{
 			_instance = value;
 		}
+	}
+
+	void Awake()
+	{
+		_currentTransform = transform;
+		_poolDictionary = new Dictionary<int,Queue<PoolObject>> ();
+
 	}
 
 	public void CreatePool(GameObject prefab, int poolSize)
@@ -33,12 +42,14 @@ public class PoolManager : MonoBehaviour
 			for (int i = 0; i < poolSize; i++) 
 			{
 				PoolObject newObject = Instantiate (prefab).GetComponent<PoolObject>();
+				newObject.Deactivate (_currentTransform);
+
 				_poolDictionary [poolKey].Enqueue (newObject);
 			}
 		}
 	}
 
-	public void GetFromPool(GameObject gameObj, Vector3 position, Quaternion rotation)
+	public void ReuseFromPool(GameObject gameObj, Vector3 position, Quaternion rotation)
 	{
 		int poolKey = gameObj.GetInstanceID ();
 
@@ -46,17 +57,25 @@ public class PoolManager : MonoBehaviour
 		{
 			PoolObject objectGet = _poolDictionary [poolKey].Dequeue ();
 			objectGet.Activate (position, rotation);
+
+			_poolDictionary [poolKey].Enqueue (objectGet);
 		}
 	}
 
-	public void PutToPool(PoolObject poolObj)
+	public void DeactivateAllPoolObjects(GameObject poolObj)
 	{
-		int poolKey = poolObj.gameObject.GetInstanceID ();
+		int poolKey = poolObj.GetInstanceID ();
 
 		if (_poolDictionary.ContainsKey (poolKey)) 
 		{
-			poolObj.Deactivate ();
-			_poolDictionary [poolKey].Enqueue (poolObj);
+			int poolSize = _poolDictionary [poolKey].Count;
+			for (int i = 0; i < poolSize; i++) 
+			{
+				PoolObject objectGet = _poolDictionary [poolKey].Dequeue ();
+				objectGet.Deactivate (_currentTransform);
+
+				_poolDictionary [poolKey].Enqueue (objectGet);
+			}
 		}
 	}
 }

@@ -12,18 +12,18 @@ public class PlayerManager : MonoBehaviour
 	private Transform _currentTransform;
 
 	private SpriteRenderer _spearSprite;
-
+	private bool _enablePlayManager;
 	void OnEnable()
 	{
 		SensorController.OnSensorPress += MovePlayer;
-		PlayerBoll.OnBadMove += BadMoveAction;
 		PlayerSpear.OnGoodMove += GoodMoveAction;
+
+		ResetValues();
 	}
 
 	void OnDisable()
 	{
 		SensorController.OnSensorPress -= MovePlayer;
-		PlayerBoll.OnBadMove -= BadMoveAction;
 		PlayerSpear.OnGoodMove -= GoodMoveAction;
 	}
 	// Use this for initialization
@@ -33,24 +33,29 @@ public class PlayerManager : MonoBehaviour
 		_spearSprite = _currentTransform.GetChild (0).GetComponent<SpriteRenderer>();
 		_playerBoll = GetComponent<PlayerMove> ();	
 		_aimBollTransform = GameObject.FindWithTag (ConstantTagName.AIM_BOLL_TAG).GetComponent<Transform>();
+		_enablePlayManager = true;
 	}
 
 	void MovePlayer () 
 	{
-		_playerBoll.MoveForward (_aimBollTransform.position.y, PLAYER_DURATION_MOVE_TO_AIM);
+		if(_enablePlayManager)
+			_playerBoll.MoveForward (_aimBollTransform.position.y, PLAYER_DURATION_MOVE_TO_AIM);
 	}
 
 	void GoodMoveAction()
 	{
 		_currentTransform.SetParent (_aimBollTransform);
 		_spearSprite.enabled = true;
-		this.enabled = false;
+
+		_playerBoll.StopMove ();
+		_enablePlayManager = false;
 	}
 
-	void BadMoveAction()
+	void ResetValues()
 	{
-		_currentTransform.SetParent (null);
 		_spearSprite.enabled = false;
-		this.enabled = false;
+
+		_playerBoll.StopMove ();
+		_enablePlayManager = true;
 	}
 }

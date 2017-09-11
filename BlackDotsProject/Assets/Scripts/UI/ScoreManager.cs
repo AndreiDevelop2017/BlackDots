@@ -11,12 +11,14 @@ public class ScoreManager : MonoBehaviour
 
 	void OnEnable()
 	{
-		PlayerSpear.OnGoodMove += ChangeScore;
+		PlayerSpear.OnGoodMove += IncreaseScore;
+		GameManager.OnLoseGame += ResetScore;
 	}
 
 	void OnDisable()
 	{
-		PlayerSpear.OnGoodMove -= ChangeScore;
+		PlayerSpear.OnGoodMove -= IncreaseScore;
+		GameManager.OnLoseGame -= ResetScore;
 	}
 
 	void Awake()
@@ -25,9 +27,15 @@ public class ScoreManager : MonoBehaviour
 		_score = 0;
 	}
 
-	void ChangeScore()
+	void IncreaseScore()
 	{
 		_score++;
+		_currentText.text = _score.ToString ();
+	}
+
+	void ResetScore()
+	{
+		_score = 0;
 		_currentText.text = _score.ToString ();
 	}
 }
